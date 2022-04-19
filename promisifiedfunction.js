@@ -1,6 +1,6 @@
 function promisifiedFunc(){
     return new Promise(function(resolve,reject){
-        //code 
+        //code to make an promisified function
         let a = 1;
         let b = 1;
         if(a == b){
