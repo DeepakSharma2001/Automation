@@ -47,7 +47,7 @@ browserPromise.then(function(browser){
     let domSelectPromise = page.evaluate(function(){
         let allDivs = document.querySelectorAll(".filter-group");
         let div = allDivs[3];
-        let clickSelector = div.querySelector(".ui-checklist-list-item input");
+        let clickSelector = div.querySelector(".ui-checklist-list-item input"); 
         clickSelector.click();
         return;
     })
@@ -70,6 +70,13 @@ browserPromise.then(function(browser){
 }).then(function(questionsArr){
     console.log(questionsArr);
     let questionPromise = questionSolver(questionsArr[0],code.answers[0]);
+    for(let i=1 ; i<questionsArr.length; i++){
+        questionPromise = questionPromise.then(function(){
+            let nextQuestionPromise = questionSolver(questionsArr[i],code.answers[i]);
+            return nextQuestionPromise;
+        })
+        return questionPromise;
+    }
 })
 
 
@@ -122,9 +129,14 @@ function questionSolver(question,answer){
             let pressV = page.keyboard.press('V');
             return pressV;
         }).then(function(){
-            return waitAndClick('.ui-btn.ui-btn-normal.ui-btn-primary.pull-right.hr-monaco-submit.ui-btn-styled');
+        }).then(function(){
+            let pressControl = page.keyboard.up('Control');
+            return pressControl;
+        }).then(function(){
+            return waitAndClick('.ui-btn.ui-btn-normal.ui-btn-primary.pull-right.hr-monaco-submit.ui-btn-styled',{delay:10});
         }).then(function(){
             console.log("questions submitted success");
+            resolve();
         })
     })
 }
